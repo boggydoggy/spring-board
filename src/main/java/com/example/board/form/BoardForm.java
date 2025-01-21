@@ -16,6 +16,7 @@ public class BoardForm {
     Date ins_date;
     String upd_user_id;
     Date upd_date;
+    String search_type;
 
     public int getBoard_seq() {
         return board_seq;
@@ -119,6 +120,14 @@ public class BoardForm {
 
     public void setUpd_date(Date upd_date) {
         this.upd_date = upd_date;
+    }
+
+    public String getSearch_type() {
+        return search_type;
+    }
+
+    public void setSearch_type(String search_type) {
+        this.search_type = search_type;
     }
 
 }

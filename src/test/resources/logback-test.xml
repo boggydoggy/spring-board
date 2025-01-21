@@ -13,7 +13,7 @@
     <appender-ref ref="STDOUT" />
   </logger>
 
-  <logger name="com.spring.board" level="debug"
+  <logger name="com.example.board" level="debug"
     additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>
