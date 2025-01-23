@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.board.common.ResultUtil;
 import com.example.board.dto.BoardDto;
 import com.example.board.form.BoardForm;
 import com.example.board.service.BoardService;
@@ -22,17 +23,17 @@ public class BoardController {
     
     /* 게시판 - 목록 페이지 이동 */
     @RequestMapping(value = "/boardList")
-    public String getBoardList(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String boardList(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return "board/boardList";
     }
     
     /* 게시판 - 목록 조회 */
     @RequestMapping(value = "/getBoardList")
     @ResponseBody
-    public List<BoardDto> getBoardList(HttpServletRequest request, HttpServletResponse respone, BoardForm boardForm) throws Exception {
-        List<BoardDto> boardList = boardService.getBoardList(boardForm);
+    public ResultUtil getBoardList(HttpServletRequest request, HttpServletResponse respone, BoardForm boardForm) throws Exception {
+        ResultUtil resultUtil = boardService.getBoardList(boardForm);
 
-        return boardList;
+        return resultUtil;
     }
     
     /* 게시판 - 상세 페이지 이동 */

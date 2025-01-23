@@ -18,21 +18,30 @@
     });
     
     /* 게시판 - 상세 페이지 이동 */
-    function goBoardDetail(boardSeq){                
+    function goBoardDetail(boardSeq){
         location.href = "/board/boardDetail?boardSeq="+ boardSeq;
     }
     
     /* 게시판 - 작성 페이지 이동 */
-    function goBoardWrite(){        
+    function goBoardWrite(){
         location.href = "/board/boardWrite";
     }
 
     /* 게시판 - 목록 조회 */
-    function getBoardList() {
+    function getBoardList(currentPageNo) {
+        if (currentPageNo === undefined) {
+            currentPageNo = "1";
+        }
+
+        $("#current_page_no").val(currentPageNo);
+
         $.ajax({
-            type : "GET",
             url : "/board/getBoardList",
+            data: $("#boardForm").serialize(),
             dataType : "JSON",
+            cache: false,
+            async: true,
+            type : "POST",
             success : function(obj) {
                 getBoardListCallback(obj);
             },
@@ -43,53 +52,66 @@
 
     /* 게시판 - 목록 조회 콜백 함수 */
     function getBoardListCallback(obj) {
-        var list = obj;
-        var listLen = obj.length;
+        var state = obj.state;
 
-        console.log(list);
-        console.log(listLen);
+        if (state == "SUCCESS") {
+            var data = obj.data;
+            var list = data.list;
+            var listLen = list.length;
+            var totalCount = data.totalCount;
+            var pagination = data.pagination;
 
-        var str = "";
+            var str = "";
 
-        if (listLen > 0) {
-            for (var a = 0; a < listLen; a++) {
-                var boardSeq = list[a].board_seq;
-                var boardReRef = list[a].board_re_ref;
-                var boardReLev = list[a].board_re_lev;
-                var boardReSeq = list[a].board_re_seq;
-                var boardWriter = list[a].board_writer;
-                var boardSubject = list[a].board_subject;
-                var boardContent = list[a].board_content;
-                var boardHits = list[a].board_hits;
-                var delYn = list[a].del_yn;
-                var insUserId = list[a].ins_user_id;
-                var insDate = list[a].ins_date;
-                var updUserId = list[a].upd_user_id;
-                var updDate = list[a].upd_date;
+            if (listLen > 0) {
+                for (var a = 0; a < listLen; a++) {
+                    var boardSeq = list[a].board_seq;
+                    var boardReRef = list[a].board_re_ref;
+                    var boardReLev = list[a].board_re_lev;
+                    var boardReSeq = list[a].board_re_seq;
+                    var boardWriter = list[a].board_writer;
+                    var boardSubject = list[a].board_subject;
+                    var boardContent = list[a].board_content;
+                    var boardHits = list[a].board_hits;
+                    var delYn = list[a].del_yn;
+                    var insUserId = list[a].ins_user_id;
+                    var insDate = list[a].ins_date;
+                    var updUserId = list[a].upd_user_id;
+                    var updDate = list[a].upd_date;
 
+                    str += "<tr>";
+                    str += "<td>"+ boardSeq +"</td>";
+                    str += "<td onclick='javascript:goBoardDetail("+ boardSeq +");' style='cursor:Pointer'>"+ boardSubject +"</td>";
+                    str += "<td>"+ boardHits +"</td>";
+                    str += "<td>"+ boardWriter +"</td>";    
+                    str += "<td>"+ insDate +"</td>";    
+                    str += "</tr>";
+                }
+            } else {
                 str += "<tr>";
-                str += "<td>"+ boardSeq +"</td>";
-                str += "<td onclick='javascript:goBoardDetail("+ boardSeq +");' style='cursor:Pointer'>"+ boardSubject +"</td>";
-                str += "<td>"+ boardHits +"</td>";
-                str += "<td>"+ boardWriter +"</td>";    
-                str += "<td>"+ insDate +"</td>";    
-                str += "</tr>";
+                str += "<td colspan='5'>등록된 글이 존재하지 않습니다.</td>";
+                str += "<tr>";
             }
-        } else {
-            str += "<tr>";
-            str += "<td colspan='5'>등록된 글이 존재하지 않습니다.</td>";
-            str += "<tr>";
+            $("#tbody").html(str);
+            $("#total_count").text(totalCount);
+            $("#pagination").html(pagination);
         }
-        $("#tbody").html(str);
     }
 </script>
 </head>
 <body>
 <div id="wrap">
   <div id="container">
-    <div class="inner">        
-      <h2>게시글 목록</h2>            
+    <div class="inner">
+      <h2>게시글 목록</h2>
         <form id="boardForm" name="boardForm">
+          <input type="hidden" id="function_name" name="function_name" value="getBoardList" />
+          <input type="hidden" id="current_page_no" name="current_page_no" value="1" />
+
+          <div class="page_info">
+            <span class="total_count"><strong>전체</strong> : <span id="total_count" class="t_red">0</span>개</span>
+          </div>
+
           <table width="100%" class="table01">
             <colgroup>
               <col width="10%" />
@@ -98,7 +120,7 @@
               <col width="15%" />
               <col width="20%" />
             </colgroup>
-            <thead>        
+            <thead>
                 <tr>
                   <th>글번호</th>
                   <th>제목</th>
@@ -108,14 +130,17 @@
                 </tr>
             </thead>
             <tbody id="tbody">
-            
-            </tbody>    
+
+            </tbody>
           </table>
-      </form>            
+      </form>
       <div class="btn_right mt15">
         <button type="button" class="btn black mr5" onclick="javascript:goBoardWrite();">작성하기</button>
       </div>
     </div>
+
+    <div id="pagination"></div>
+
   </div>
 </div>
 </body>

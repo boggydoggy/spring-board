@@ -2,7 +2,7 @@ package com.example.board.form;
 
 import java.util.Date;
 
-public class BoardForm {
+public class BoardForm extends CommonForm{
     int board_seq;
     int board_re_ref;
     int board_re_lev;

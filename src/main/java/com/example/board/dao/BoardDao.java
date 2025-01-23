@@ -16,11 +16,15 @@ public class BoardDao {
     private SqlSession sqlSession;
 
     private static final String NAMESPACE = "com.example.board.boardMapper";
+    
+    /* 게시판 - 목록 수*/
+    public int getBoardCnt(BoardForm boardForm) throws Exception {
+        return sqlSession.selectOne(NAMESPACE + ".getBoardCnt", boardForm);
+    }
 
     /* 게시판 - 목록 조회 */
     public List<BoardDto> getBoardList(BoardForm boardForm) throws Exception {
-
-        return sqlSession.selectList(NAMESPACE + ".getBoardList");
+        return sqlSession.selectList(NAMESPACE + ".getBoardList", boardForm);
     }
 
     /* 게시판 - 조회 수 수정 */
