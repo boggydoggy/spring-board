@@ -1,7 +1,5 @@
 package com.example.board.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,7 +28,7 @@ public class BoardController {
     /* 게시판 - 목록 조회 */
     @RequestMapping(value = "/getBoardList")
     @ResponseBody
-    public ResultUtil getBoardList(HttpServletRequest request, HttpServletResponse respone, BoardForm boardForm) throws Exception {
+    public ResultUtil getBoardList(HttpServletRequest request, HttpServletResponse response, BoardForm boardForm) throws Exception {
         ResultUtil resultUtil = boardService.getBoardList(boardForm);
 
         return resultUtil;
@@ -39,7 +37,6 @@ public class BoardController {
     /* 게시판 - 상세 페이지 이동 */
     @RequestMapping( value = "/boardDetail")
     public String boardDetail(HttpServletRequest request, HttpServletResponse response) throws Exception{
-        
         return "board/boardDetail";
     }    
     
@@ -47,7 +44,6 @@ public class BoardController {
     @RequestMapping(value = "/getBoardDetail")
     @ResponseBody
     public BoardDto getBoardDetail(HttpServletRequest request, HttpServletResponse response, BoardForm boardForm) throws Exception {
- 
         BoardDto boardDto = boardService.getBoardDetail(boardForm);
  
         return boardDto;
@@ -56,7 +52,6 @@ public class BoardController {
     /* 게시판 - 작성 페이지 이동 */
     @RequestMapping( value = "/boardWrite")
     public String boardWrite(HttpServletRequest request, HttpServletResponse response) throws Exception{
-        
         return "board/boardWrite";
     }
     
@@ -64,9 +59,8 @@ public class BoardController {
     @RequestMapping( value = "/insertBoard")
     @ResponseBody
     public BoardDto insertBoard(HttpServletRequest request, HttpServletResponse response, BoardForm boardForm) throws Exception{
-        
         BoardDto boardDto = boardService.insertBoard(boardForm);
-        
+
         return boardDto;
     }
     
@@ -74,16 +68,14 @@ public class BoardController {
     @RequestMapping( value = "/deleteBoard")
     @ResponseBody
     public BoardDto deleteBoard(HttpServletRequest request, HttpServletResponse response, BoardForm boardForm) throws Exception{
-        
         BoardDto boardDto = boardService.deleteBoard(boardForm);
-        
+
         return boardDto;
     }
     
     /* 게시판 - 수정 페이지 이동 */
     @RequestMapping( value = "/boardUpdate")
     public String boardUpdate(HttpServletRequest request, HttpServletResponse response) throws Exception{
-        
         return "board/boardUpdate";
     }
     
@@ -91,9 +83,23 @@ public class BoardController {
     @RequestMapping( value = "/updateBoard")
     @ResponseBody
     public BoardDto updateBoard(HttpServletRequest request, HttpServletResponse response, BoardForm boardForm) throws Exception{
-        
         BoardDto boardDto = boardService.updateBoard(boardForm);
-        
+
+        return boardDto;
+    }
+
+    /* 게시판 - 답글 페이지 이동 */
+    @RequestMapping(value = "/boardReply")
+    public String boardReply(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return "board/boardReply";
+    }
+ 
+    /* 게시판 - 답글 등록 */
+    @RequestMapping(value = "/insertBoardReply")
+    @ResponseBody
+    public BoardDto insertBoardReply(HttpServletRequest request, HttpServletResponse response, BoardForm boardForm) throws Exception {
+        BoardDto boardDto = boardService.insertBoardReply(boardForm);
+ 
         return boardDto;
     }
 }

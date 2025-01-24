@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class BoardForm extends CommonForm{
     int board_seq;
+    int board_parent_seq;
     int board_re_ref;
     int board_re_lev;
     int board_re_seq;
@@ -24,6 +25,14 @@ public class BoardForm extends CommonForm{
 
     public void setBoard_seq(int board_seq) {
         this.board_seq = board_seq;
+    }
+
+    public int getBoard_parent_seq() {
+        return board_parent_seq;
+    }
+
+    public void setBoard_parent_seq(int board_parent_seq) {
+        this.board_parent_seq = board_parent_seq;
     }
 
     public int getBoard_re_ref() {
@@ -128,6 +137,5 @@ public class BoardForm extends CommonForm{
 
     public void setSearch_type(String search_type) {
         this.search_type = search_type;
-    }
-
+    } 
 }

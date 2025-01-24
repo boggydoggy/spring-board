@@ -24,19 +24,27 @@ String boardSeq = request.getParameter("boardSeq");
         getBoardDetail();
     });
 
-    /** 게시판 - 목록 페이지 이동 */
+    /* 게시판 - 목록 페이지 이동 */
     function goBoardList() {
         location.href = "/board/boardList";
     }
 
-    /** 게시판 - 수정 페이지 이동 */
+    /* 게시판 - 수정 페이지 이동 */
     function goBoardUpdate() {
         var boardSeq = $("#board_seq").val();
 
         location.href = "/board/boardUpdate?boardSeq=" + boardSeq;
     }
 
-    /** 게시판 - 상세 조회  */
+    /* 게시판 - 답글 페이지 이동 */
+    function goBoardReply(){
+        
+        var boardSeq = $("#board_seq").val();
+        
+        location.href = "/board/boardReply?boardSeq="+ boardSeq;
+    }
+
+    /* 게시판 - 상세 조회  */
     function getBoardDetail(boardSeq) {
         var boardSeq = $("#board_seq").val();
 
@@ -59,7 +67,7 @@ String boardSeq = request.getParameter("boardSeq");
         }
     }
 
-    /** 게시판 - 상세 조회  콜백 함수 */
+    /* 게시판 - 상세 조회  콜백 함수 */
     function getBoardDetailCallback(obj) {
         var str = "";
 
@@ -104,7 +112,7 @@ String boardSeq = request.getParameter("boardSeq");
         $("#tbody").html(str);
     }
 
-    /** 게시판 - 삭제  */
+    /* 게시판 - 삭제  */
     function deleteBoard() {
         var boardSeq = $("#board_seq").val();
 
@@ -127,7 +135,7 @@ String boardSeq = request.getParameter("boardSeq");
         }
     }
 
-    /** 게시판 - 삭제 콜백 함수 */
+    /* 게시판 - 삭제 콜백 함수 */
     function deleteBoardCallback(obj) {
         if (obj != null) {
             var result = obj.result;
@@ -173,6 +181,8 @@ String boardSeq = request.getParameter("boardSeq");
             onclick="javascript:goBoardUpdate();">수정하기</button>
           <button type="button" class="btn black"
             onclick="javascript:deleteBoard();">삭제하기</button>
+          <button type="button" class="btn black mr5"
+            onclick="javascript:goBoardReply();">답글쓰기</button>
         </div>
       </div>
     </div>

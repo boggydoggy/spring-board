@@ -63,6 +63,10 @@
   </select>
 
   <insert id="insertBoard" parameterType="com.example.board.form.BoardForm">
+    <selectKey resultType="int" keyProperty="board_re_ref" order="BEFORE">
+      SELECT IFNULL(MAX(BOARD_RE_REF), 0) + 1
+      FROM BOARD.TB_BOARD
+    </selectKey>
     INSERT
       INTO BOARD.TB_BOARD (
         BOARD_RE_REF
@@ -77,7 +81,7 @@
         , UPD_DATE
       )
     VALUES (
-      0
+      #{board_re_ref}
       , 0
       , 0
       , #{board_writer}
@@ -92,30 +96,30 @@
 
   <insert id="insertBoardFail" parameterType="com.example.board.form.BoardForm">
     INSERT
-    INTO BOARD.TB_BOARD (
-      BOARD_RE_REF
-      , BOARD_RE_LEV
-      , BOARD_RE_SEQ
-      , BOARD_WRITER
-      , BOARD_SUBJECT
-      , BOARD_CONTENT
-      , INS_USER_ID
-      , INS_DATE
-      , UPD_USER_ID
-      , UPD_DATE
-    )
-    VALUES (
-      0
-      , 0
-      , 0
-      , #{board_writer1}
-      , #{board_subject}
-      , #{board_content}
-      , 'NONMEMBER'
-      , NOW()
-      , 'NONMEMBER'
-      , NOW()
-    )
+      INTO BOARD.TB_BOARD (
+        BOARD_RE_REF
+        , BOARD_RE_LEV
+        , BOARD_RE_SEQ
+        , BOARD_WRITER
+        , BOARD_SUBJECT
+        , BOARD_CONTENT
+        , INS_USER_ID
+        , INS_DATE
+        , UPD_USER_ID
+        , UPD_DATE
+      )
+      VALUES (
+        0
+        , 0
+        , 0
+        , #{board_writer1}
+        , #{board_subject}
+        , #{board_content}
+        , 'NONMEMBER'
+        , NOW()
+        , 'NONMEMBER'
+        , NOW()
+      )
   </insert>
 
   <delete id="deleteBoard" parameterType="com.example.board.form.BoardForm">
@@ -132,4 +136,52 @@
         , UPD_DATE = NOW()
     WHERE BOARD_SEQ = #{board_seq}
   </update>
+
+  <select id="getBoardReplyInfo" parameterType="com.example.board.form.BoardForm"
+    resultType="com.example.board.dto.BoardDto">
+
+    SELECT BOARD_SEQ
+      , BOARD_RE_REF
+      , BOARD_RE_LEV
+      , BOARD_RE_SEQ
+    FROM TB_BOARD
+    WHERE BOARD_SEQ = #{board_parent_seq}
+  </select>
+
+  <update id="updateBoardReSeq" parameterType="com.example.board.form.BoardForm">
+    UPDATE TB_BOARD
+      SET BOARD_RE_SEQ = BOARD_RE_SEQ +1
+        , UPD_USER_ID = 'NONMEMBER'
+        , UPD_DATE = NOW()
+      WHERE BOARD_RE_REF = #{board_re_ref}
+        AND BOARD_RE_SEQ > #{board_re_seq}
+  </update>
+
+  <insert id="insertBoardReply" parameterType="com.example.board.form.BoardForm">
+    INSERT
+      INTO BOARD.TB_BOARD (
+        BOARD_RE_REF
+        , BOARD_RE_LEV
+        , BOARD_RE_SEQ
+        , BOARD_WRITER
+        , BOARD_SUBJECT
+        , BOARD_CONTENT
+        , INS_USER_ID
+        , INS_DATE
+        , UPD_USER_ID
+        , UPD_DATE
+      )
+      VALUES (
+        #{board_re_ref}
+        , #{board_re_lev} + 1
+        , #{board_re_seq} + 1
+        , #{board_writer}
+        , #{board_subject}
+        , #{board_content}
+        , 'NONMEMBER'
+        , NOW()
+        , 'NONMEMBER'
+        , NOW()
+      )
+  </insert>
 </mapper>
