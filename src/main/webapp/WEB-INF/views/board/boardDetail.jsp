@@ -121,7 +121,9 @@ String boardSeq = request.getParameter("boardSeq");
 
                     str += "<tr>";
                     str += "<th>첨부파일</th>";
-                    str += "<td colspan='3'><a href='/board/fileDownload?fileNameKey="+encodeURI(fileNameKey)+"&fileName="+encodeURI(fileName)+"&filePath="+encodeURI(filePath)+"'>" + fileName + "</a></td>";
+                    str += "<td colspan='3'><a href='/board/fileDownload?fileNameKey="+encodeURI(fileNameKey)
+                            + "&fileName=" + encodeURI(fileName) + "&filePath="
+                            + encodeURI(filePath) + "'>" + fileName + "</a></td>";
                     str += "</tr>";
                 }
             }

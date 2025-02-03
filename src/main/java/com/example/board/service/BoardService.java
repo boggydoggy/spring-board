@@ -40,21 +40,21 @@ public class BoardService {
             commonForm.setTotal_list_count(totalCount);
             commonDto = PagingUtil.setPageUtil(commonForm);
         }
-        
+
         boardForm.setLimit(commonDto.getLimit());
         boardForm.setOffset(commonDto.getOffset());
-        
+
         List<BoardDto> list = boardDao.getBoardList(boardForm);
-        
+
         HashMap<String, Object> resultMap = new HashMap<>();
-        
+
         resultMap.put("list", list);
         resultMap.put("totalCount", totalCount);
         resultMap.put("pagination", commonDto.getPagination());
-        
+
         resultUtil.setData(resultMap);
         resultUtil.setState("SUCCESS");
-        
+
         return resultUtil;
     }
 
@@ -111,11 +111,11 @@ public class BoardService {
     /* 게시판 - 첨부파일 정보 조회 */
     public List<BoardFileForm> getBoardFileInfo(BoardForm boardForm) throws Exception {
         List<MultipartFile> files = boardForm.getFiles();
- 
+
         List<BoardFileForm> boardFileList = new ArrayList<BoardFileForm>();
- 
+
         BoardFileForm boardFileForm = new BoardFileForm();
- 
+
         int boardSeq = boardForm.getBoard_seq();
         String fileName = null;
         String fileExt = null;
@@ -178,6 +178,25 @@ public class BoardService {
         BoardDto boardDto = new BoardDto();
 
         int updateCnt = boardDao.updateBoard(boardForm);
+
+        String deleteFile = boardForm.getDelete_file();
+        if (!"".equals(deleteFile)) {
+            String[] deleteFileInfo = deleteFile.split("!");
+
+            int boardSeq = Integer.parseInt(deleteFileInfo[0]);
+            int fileNo = Integer.parseInt(deleteFileInfo[1]);
+
+            BoardFileForm deleteBoardFileForm = new BoardFileForm();
+            deleteBoardFileForm.setBoard_seq(boardSeq);
+            deleteBoardFileForm.setFile_no(fileNo);
+
+            boardDao.deleteBoardFile(deleteBoardFileForm);
+        }
+
+        List<BoardFileForm> boardFileList = getBoardFileInfo(boardForm);
+        for (BoardFileForm boardFileForm: boardFileList) {
+            boardDao.insertBoardFile(boardFileForm);
+        }
 
         if (updateCnt > 0) {
             boardDto.setResult("SUCCESS");

@@ -119,7 +119,7 @@
 
   <insert id="insertBoardFile" parameterType="com.example.board.form.BoardFileForm">
     <selectKey resultType="int" keyProperty="file_no" order="BEFORE">
-      SELECT IFNULL(MAX(FILE_NO), 0) + 1 
+      SELECT IFNULL(MAX(FILE_NO), 0) + 1
       FROM BOARD.TB_BOARD_FILE
       WHERE BOARD_SEQ = #{board_seq}
     </selectKey>
@@ -242,4 +242,13 @@
         , NOW()
       )
   </insert>
+
+  <update id="deleteBoardFile" parameterType="com.example.board.form.BoardFileForm">
+    UPDATE BOARD.TB_BOARD_FILE
+      SET DEL_YN = 'Y'
+        , UPD_USER_ID = 'NONMEMBER'
+        , UPD_DATE = NOW()
+    WHERE BOARD_SEQ = #{board_seq}
+      AND FILE_NO = #{file_no}
+  </update>
 </mapper>

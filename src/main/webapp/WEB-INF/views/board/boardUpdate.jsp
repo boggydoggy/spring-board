@@ -19,17 +19,18 @@ String boardSeq = request.getParameter("boardSeq");
 
 <!-- 공통 JavaScript -->
 <script type="text/javascript" src="/js/common/jquery.js"></script>
+<script type="text/javascript" src="/js/common/jquery.form.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         getBoardDetail();
     });
 
-    /** 게시판 - 목록 페이지 이동 */
+    /* 게시판 - 목록 페이지 이동 */
     function goBoardList() {
         location.href = "/board/boardList";
     }
 
-    /** 게시판 - 상세 조회  */
+    /* 게시판 - 상세 조회  */
     function getBoardDetail(boardSeq) {
         var boardSeq = $("#board_seq").val();
 
@@ -52,7 +53,7 @@ String boardSeq = request.getParameter("boardSeq");
         }
     }
     
-    /** 게시판 - 상세 조회  콜백 함수 */
+    /* 게시판 - 상세 조회  콜백 함수 */
     function getBoardDetailCallback(obj) {
         var str = "";
 
@@ -70,17 +71,48 @@ String boardSeq = request.getParameter("boardSeq");
             var insDate = obj.ins_date;
             var updUserId = obj.upd_user_id;
             var updDate = obj.upd_date;
+            var files = obj.files;
+            var filesLen = files.length;
 
             $("#board_subject").val(boardSubject);
             $("#board_content").val(boardContent);
             $("#board_writer").text(boardWriter);
+
+            var fileStr = "";
+
+            if (filesLen > 0) {
+                for (var a = 0; a < filesLen; a++) {
+                    var boardSeq    = files[a].board_seq;
+                    var fileNo         = files[a].file_no;
+                    var fileNameKey = files[a].file_name_key;
+                    var fileName     = files[a].file_name;
+                    var filePath     = files[a].file_path;
+                    var fileSize     = files[a].file_size;
+                    var remark         = files[a].remark;
+                    var delYn         = files[a].del_yn;
+                    var insUserId     = files[a].ins_user_id;
+                    var insDate     = files[a].ins_date;
+                    var updUserId     = files[a].upd_user_id;
+                    var updDate     = files[a].upd_date;
+
+                    fileStr += "<a href='/board/fileDownload?fileNameKey=" + encodeURI(fileNameKey)
+                            + "&fileName="+encodeURI(fileName) + "&filePath=" + encodeURI(filePath )+ "'>"
+                            + fileName + "</a>";
+                    fileStr += "<button type='button' class='btn black ml15' style='padding:3px 5px 6px 5px;' onclick='javascript:setDeleteFile("
+                            + boardSeq +", " + fileNo + ")'>X</button>";
+                }
+            } else {
+                fileStr = "<input type='file' id='files[0]' name='files[0]' value=''></td>";
+            }
+
+            $("#file_td").html(fileStr);
         } else {
             alert("등록된 글이 존재하지 않습니다.");
             return;
         }
     }
 
-    /** 게시판 - 수정  */
+    /* 게시판 - 수정  */
     function updateBoard() {
         var boardSubject = $("#board_subject").val();
         var boardContent = $("#board_content").val();
@@ -99,23 +131,26 @@ String boardSeq = request.getParameter("boardSeq");
 
         var yn = confirm("게시글을 수정하시겠습니까?");
         if (yn) {
-            $.ajax({
+            var filesChk = $("input[name='files[0]']").val();
+            if (filesChk == "") {
+                $("input[name='files[0]']").remove();
+            }
+
+            $("#boardForm").ajaxForm({
                 url : "/board/updateBoard",
-                data : $("#boardForm").serialize(),
-                dataType : "JSON",
+                enctype : "multipart/form-data",
                 cache : false,
                 async : true,
                 type : "POST",
                 success : function(obj) {
                     updateBoardCallback(obj);
                 },
-                error : function(xhr, status, error) {
-                }
-            });
+                error : function(xhr, status, error) {}
+            }).submit();
         }
     }
 
-    /** 게시판 - 수정 콜백 함수 */
+    /* 게시판 - 수정 콜백 함수 */
     function updateBoardCallback(obj) {
         if (obj != null) {
             var result = obj.result;
@@ -128,6 +163,15 @@ String boardSeq = request.getParameter("boardSeq");
                 return;
             }
         }
+    }
+
+    /* 게시판 - 삭제할 첨부파일 정보 */
+    function setDeleteFile(boardSeq, fileSeq) {
+        var deleteFile = boardSeq + "!" + fileSeq;
+        $("#delete_file").val(deleteFile);
+
+        var fileStr = "<input type='file' id='files[0]' name='files[0]' value=''>";
+        $("#file_td").html(fileStr);
     }
 </script>
 </head>
@@ -161,14 +205,18 @@ String boardSeq = request.getParameter("boardSeq");
                   name="board_content" cols="50" rows="5"
                   class="textarea01"></textarea></td>
               </tr>
+              <tr>
+                <th>첨부파일</th>
+                <td colspan="3" id="file_td"><input type="file" id="files[0]" name="files[0]" value=""></td>
+              </tr>
             </tbody>
           </table>
-          <input type="hidden" id="board_seq" name="board_seq"
-            value="${boardSeq}" />
           <!-- 게시글 번호 -->
-          <input type="hidden" id="search_type" name="search_type"
-            value="U" />
+          <input type="hidden" id="board_seq" name="board_seq" value="${boardSeq}" />
           <!-- 조회 타입 - 상세(S)/수정(U) -->
+          <input type="hidden" id="search_type" name="search_type" value="U" />
+          <!-- 삭제할 첨부파일 -->
+          <input type="hidden" id="delete_file" name="delete_file" value=""/>
         </form>
         <div class="btn_right mt15">
           <button type="button" class="btn black mr5"
