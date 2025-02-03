@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
-  <appender name="STDOUT"
+  <appender name="console"
     class="ch.qos.logback.core.ConsoleAppender">
-    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-      <pattern>%d %-5level %logger - %msg%n</pattern>
-    </encoder>
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%d [%thread] %-5level %logger - [%X{ID}]:%msg%n</pattern>
+    </layout>
   </appender>
 
   <logger name="org.springframework" level="info"
     additivity="false">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="console" />
   </logger>
 
   <logger name="com.example.board" level="debug"
     additivity="false">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="console" />
   </logger>
 
   <root level="info">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="console" />
   </root>
-
 </configuration>
