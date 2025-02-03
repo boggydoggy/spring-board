@@ -1,16 +1,21 @@
 package com.example.board.service;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.board.common.PagingUtil;
 import com.example.board.common.ResultUtil;
 import com.example.board.dao.BoardDao;
 import com.example.board.dto.BoardDto;
 import com.example.board.dto.CommonDto;
+import com.example.board.form.BoardFileForm;
 import com.example.board.form.BoardForm;
 import com.example.board.form.CommonForm;
 
@@ -73,6 +78,7 @@ public class BoardService {
 
     /* 게시판 - 등록 */
     public BoardDto insertBoard(BoardForm boardForm) throws Exception {
+        System.out.println("insertBoard_BoardService");
         BoardDto boardDto = new BoardDto();
 
         int insertCnt = 0;
@@ -82,6 +88,12 @@ public class BoardService {
         insertCnt = boardDao.insertBoard(boardForm);
 //        insertCnt = boardDao.insertBoardFail(boardForm);
 
+        List<BoardFileForm> boardFileList = getBoardFileInfo(boardForm);
+
+        for (BoardFileForm boardFileForm: boardFileList) {
+            boardDao.insertBoardFile(boardFileForm);
+        }
+
         if (insertCnt > 0) {
             boardDto.setResult("SUCCESS");
         } else {
@@ -89,6 +101,56 @@ public class BoardService {
         }
 
         return boardDto;
+    }
+
+    /* 게시판 - 첨부파일 정보 조회 */
+    public List<BoardFileForm> getBoardFileInfo(BoardForm boardForm) throws Exception {
+        System.out.println("getBoardFileInfo_BoardService");
+ 
+        List<MultipartFile> files = boardForm.getFiles();
+ 
+        List<BoardFileForm> boardFileList = new ArrayList<BoardFileForm>();
+ 
+        BoardFileForm boardFileForm = new BoardFileForm();
+ 
+        int boardSeq = boardForm.getBoard_seq();
+        String fileName = null;
+        String fileExt = null;
+        String fileNameKey = null;
+        String fileSize = null;
+        // 파일이 저장될 Path 설정
+        String filePath = "C:\\board\\file";
+
+        if (files != null && files.size() > 0) { 
+            File file = new File(filePath);
+
+            // 디렉토리가 없으면 생성
+            if (file.exists() == false) {
+                file.mkdirs();
+            }
+ 
+            for (MultipartFile multipartFile : files) {
+ 
+                fileName = multipartFile.getOriginalFilename();
+                fileExt = fileName.substring(fileName.lastIndexOf("."));
+                // 파일명 변경(uuid로 암호화) + 확장자
+                fileNameKey = getRandomString() + fileExt;
+                fileSize = String.valueOf(multipartFile.getSize());
+ 
+                // 설정한 Path에 파일 저장
+                file = new File(filePath + "/" + fileNameKey);
+                multipartFile.transferTo(file);
+ 
+                boardFileForm = new BoardFileForm();
+                boardFileForm.setBoard_seq(boardSeq);
+                boardFileForm.setFile_name(fileName);
+                boardFileForm.setFile_name_key(fileNameKey);
+                boardFileForm.setFile_path(filePath);
+                boardFileForm.setFile_size(fileSize);
+                boardFileList.add(boardFileForm);
+            }
+        }
+        return boardFileList;
     }
 
     /* 게시판 - 삭제 */
@@ -147,5 +209,11 @@ public class BoardService {
         }
  
         return boardDto;
+    }
+
+    /* 32글자의 랜덤한 문자열(숫자포함) 생성 */
+    public static String getRandomString() {
+ 
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 }

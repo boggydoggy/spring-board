@@ -59,6 +59,7 @@ public class BoardController {
     @RequestMapping( value = "/insertBoard")
     @ResponseBody
     public BoardDto insertBoard(HttpServletRequest request, HttpServletResponse response, BoardForm boardForm) throws Exception{
+        System.out.println("insertBoard_BoardController");
         BoardDto boardDto = boardService.insertBoard(boardForm);
 
         return boardDto;
