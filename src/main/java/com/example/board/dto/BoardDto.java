@@ -1,5 +1,7 @@
 package com.example.board.dto;
 
+import java.util.List;
+
 public class BoardDto extends CommonDto{
     int board_seq;
     int board_parent_seq;
@@ -15,8 +17,10 @@ public class BoardDto extends CommonDto{
     String ins_date;
     String upd_user_id;
     String upd_date;
-    
+
     String result;
+
+    List<BoardFileDto> files;
 
     public int getBoard_seq() {
         return board_seq;
@@ -138,4 +142,11 @@ public class BoardDto extends CommonDto{
         this.result = result;
     }
 
+    public List<BoardFileDto> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<BoardFileDto> files) {
+        this.files = files;
+    }
 }

@@ -11,8 +11,8 @@
 String boardSeq = request.getParameter("boardSeq");
 %>
 
-<c:set var="boardSeq" value="<%=boardSeq%>" />
 <!-- 게시글 번호 -->
+<c:set var="boardSeq" value="<%=boardSeq%>" />
 
 <!-- 공통 CSS -->
 <link rel="stylesheet" type="text/css" href="/css/common/common.css" />
@@ -38,7 +38,6 @@ String boardSeq = request.getParameter("boardSeq");
 
     /* 게시판 - 답글 페이지 이동 */
     function goBoardReply(){
-        
         var boardSeq = $("#board_seq").val();
         
         location.href = "/board/boardReply?boardSeq="+ boardSeq;
@@ -85,6 +84,8 @@ String boardSeq = request.getParameter("boardSeq");
             var insDate = obj.ins_date;
             var updUserId = obj.upd_user_id;
             var updDate = obj.upd_date;
+            var files = obj.files;
+            var filesLen = files.length;
 
             str += "<tr>";
             str += "<th>제목</th>";
@@ -103,8 +104,28 @@ String boardSeq = request.getParameter("boardSeq");
             str += "<td colspan='3'>" + boardContent + "</td>";
             str += "</tr>";
 
-        } else {
+            if(filesLen > 0){
+                for(var a=0; a<filesLen; a++){
+                    var boardSeq    = files[a].board_seq;
+                    var fileNo         = files[a].file_no;
+                    var fileNameKey = files[a].file_name_key;
+                    var fileName     = files[a].file_name;
+                    var filePath     = files[a].file_path;
+                    var fileSize     = files[a].file_size;
+                    var remark         = files[a].remark;
+                    var delYn         = files[a].del_yn;
+                    var insUserId     = files[a].ins_user_id;
+                    var insDate     = files[a].ins_date;
+                    var updUserId     = files[a].upd_user_id;
+                    var updDate     = files[a].upd_date;
 
+                    str += "<tr>";
+                    str += "<th>첨부파일</th>";
+                    str += "<td colspan='3'><a href='/board/fileDownload?fileNameKey="+encodeURI(fileNameKey)+"&fileName="+encodeURI(fileName)+"&filePath="+encodeURI(filePath)+"'>" + fileName + "</a></td>";
+                    str += "</tr>";
+                }
+            }
+        } else {
             alert("등록된 글이 존재하지 않습니다.");
             return;
         }

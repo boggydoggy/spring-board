@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import com.example.board.dto.BoardDto;
+import com.example.board.dto.BoardFileDto;
 import com.example.board.form.BoardFileForm;
 import com.example.board.form.BoardForm;
 
@@ -30,14 +31,17 @@ public class BoardDao {
 
     /* 게시판 - 조회 수 수정 */
     public int updateBoardHits(BoardForm boardForm) throws Exception {
-
         return sqlSession.update(NAMESPACE + ".updateBoardHits", boardForm);
     }
 
     /* 게시판 - 상세 조회 */
     public BoardDto getBoardDetail(BoardForm boardForm) throws Exception {
-
         return sqlSession.selectOne(NAMESPACE + ".getBoardDetail", boardForm);
+    }
+
+    /** 게시판 - 첨부파일 조회 */
+    public List<BoardFileDto> getBoardFileList(BoardFileForm boardFileForm) throws Exception {
+        return sqlSession.selectList(NAMESPACE + ".getBoardFileList", boardFileForm);
     }
 
     /* 게시판 - 그룹 번호 조회 */
@@ -47,7 +51,6 @@ public class BoardDao {
 
     /* 게시판 - 등록 */
     public int insertBoard(BoardForm boardForm) throws Exception {
-        System.out.println("insertBoard_BoardDao");
         return sqlSession.insert(NAMESPACE + ".insertBoard", boardForm);
     }
 
@@ -63,13 +66,11 @@ public class BoardDao {
 
     /* 게시판 - 삭제 */
     public int deleteBoard(BoardForm boardForm) throws Exception {
-
         return sqlSession.delete(NAMESPACE + ".deleteBoard", boardForm);
     }
 
     /* 게시판 - 수정 */
     public int updateBoard(BoardForm boardForm) throws Exception {
-
         return sqlSession.update(NAMESPACE + ".updateBoard", boardForm);
     }
 

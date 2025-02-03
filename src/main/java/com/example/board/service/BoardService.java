@@ -73,12 +73,17 @@ public class BoardService {
         } else {
             boardDto = boardDao.getBoardDetail(boardForm);
         }
+
+        BoardFileForm boardFileForm = new BoardFileForm();
+        boardFileForm.setBoard_seq(boardForm.getBoard_seq());
+
+        boardDto.setFiles(boardDao.getBoardFileList(boardFileForm));
+
         return boardDto;
     }
 
     /* 게시판 - 등록 */
     public BoardDto insertBoard(BoardForm boardForm) throws Exception {
-        System.out.println("insertBoard_BoardService");
         BoardDto boardDto = new BoardDto();
 
         int insertCnt = 0;
@@ -105,8 +110,6 @@ public class BoardService {
 
     /* 게시판 - 첨부파일 정보 조회 */
     public List<BoardFileForm> getBoardFileInfo(BoardForm boardForm) throws Exception {
-        System.out.println("getBoardFileInfo_BoardService");
- 
         List<MultipartFile> files = boardForm.getFiles();
  
         List<BoardFileForm> boardFileList = new ArrayList<BoardFileForm>();
@@ -128,19 +131,19 @@ public class BoardService {
             if (file.exists() == false) {
                 file.mkdirs();
             }
- 
+
             for (MultipartFile multipartFile : files) {
- 
+
                 fileName = multipartFile.getOriginalFilename();
                 fileExt = fileName.substring(fileName.lastIndexOf("."));
                 // 파일명 변경(uuid로 암호화) + 확장자
                 fileNameKey = getRandomString() + fileExt;
                 fileSize = String.valueOf(multipartFile.getSize());
- 
+
                 // 설정한 Path에 파일 저장
                 file = new File(filePath + "/" + fileNameKey);
                 multipartFile.transferTo(file);
- 
+
                 boardFileForm = new BoardFileForm();
                 boardFileForm.setBoard_seq(boardSeq);
                 boardFileForm.setFile_name(fileName);
@@ -187,33 +190,33 @@ public class BoardService {
 
     /* 게시판 - 답글 등록 */
     public BoardDto insertBoardReply(BoardForm boardForm) throws Exception {
- 
+
         BoardDto boardDto = new BoardDto();
- 
+
         BoardDto boardReplayInfo = boardDao.getBoardReplyInfo(boardForm);
- 
+
         boardForm.setBoard_seq(boardReplayInfo.getBoard_seq());
         boardForm.setBoard_re_lev(boardReplayInfo.getBoard_re_lev());
         boardForm.setBoard_re_ref(boardReplayInfo.getBoard_re_ref());
         boardForm.setBoard_re_seq(boardReplayInfo.getBoard_re_seq());
- 
+
         int insertCnt = 0;
- 
+
         insertCnt += boardDao.updateBoardReSeq(boardForm);
         insertCnt += boardDao.insertBoardReply(boardForm);
- 
+
         if (insertCnt > 0) {
             boardDto.setResult("SUCCESS");
         } else {
             boardDto.setResult("FAIL");
         }
- 
+
         return boardDto;
     }
 
     /* 32글자의 랜덤한 문자열(숫자포함) 생성 */
     public static String getRandomString() {
- 
+
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 }
